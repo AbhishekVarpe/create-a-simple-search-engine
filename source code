@@ -1,0 +1,50 @@
+import java.util.*;
+
+public class SimpleSearchEngine {
+    private Map<String, List<String>> invertedIndex = new HashMap<>();
+
+    public void indexDocument(String documentId, String content) {
+        String[] words = content.split("\\s+");
+        for (String word : words) {
+            word = word.toLowerCase();
+            invertedIndex.computeIfAbsent(word, k -> new ArrayList<>()).add(documentId);
+        }
+    }
+
+    public List<String> search(String query) {
+        query = query.toLowerCase();
+        String[] queryWords = query.split("\\s+");
+        Set<String> result = new HashSet<>();
+
+        for (String queryWord : queryWords) {
+            if (invertedIndex.containsKey(queryWord)) {
+                result.addAll(invertedIndex.get(queryWord));
+            }
+        }
+
+        return new ArrayList<>(result);
+    }
+
+    public static void main(String[] args) {
+        SimpleSearchEngine searchEngine = new SimpleSearchEngine();
+
+        // Index some sample documents
+        searchEngine.indexDocument("doc1", "This is a sample document about Java programming.");
+        searchEngine.indexDocument("doc2", "Java is a popular programming language.");
+        searchEngine.indexDocument("doc3", "Python and Java are both used in machine learning.");
+
+        // Perform a search
+        String query = "Java programming";
+        List<String> searchResult = searchEngine.search(query);
+
+        // Display the search result
+        if (!searchResult.isEmpty()) {
+            System.out.println("Search results for query: " + query);
+            for (String documentId : searchResult) {
+                System.out.println("Document ID: " + documentId);
+            }
+        } else {
+            System.out.println("No results found for query: " + query);
+        }
+    }
+}
